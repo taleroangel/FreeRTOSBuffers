@@ -1,0 +1,17 @@
+[properties]
+freertos = true
+ramlinker = false
+
+[binaries]
+c = 'arm-none-eabi-gcc'
+cpp = 'arm-none-eabi-g++'
+ld = 'arm-none-eabi-ld'
+ar = 'arm-none-eabi-ar'
+as = 'arm-none-eabi-as'
+strip = 'arm-none-eabi-strip'
+
+[host_machine]
+system = 'bare-metel'
+cpu_family = 'arm'
+cpu = 'cortex-m0+'
+endian = 'little'
