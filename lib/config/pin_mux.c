@@ -15,7 +15,7 @@
  *   list of conditions and the following disclaimer in the documentation and/or
  *   other materials provided with the distribution.
  *
- * o Neither the name of the copyright holder nor the names of its
+ * o Neither the name of Freescale Semiconductor, Inc. nor the names of its
  *   contributors may be used to endorse or promote products derived from this
  *   software without specific prior written permission.
  *
@@ -32,65 +32,38 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* clang-format off */
-/*
- * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-!!GlobalInfo
-product: Pins v3.0
-processor: MKL46Z256xxx4
-package_id: MKL46Z256VLL4
-mcu_data: ksdk2_0
-processor_version: 0.0.9
-board: FRDM-KL46Z
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
- */
-/* clang-format on */
-
 #include "fsl_common.h"
 #include "fsl_port.h"
 #include "pin_mux.h"
 
+#include <pinout.h>
 
-
-/* clang-format off */
-/*
- * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-BOARD_InitPins:
-- options: {callFromInitBoot: 'true', prefix: BOARD_, coreID: core0, enableClock: 'true'}
-- pin_list:
-  - {pin_num: '35', peripheral: UART0, signal: RX, pin_signal: TSI0_CH2/PTA1/UART0_RX/TPM2_CH0}
-  - {pin_num: '36', peripheral: UART0, signal: TX, pin_signal: TSI0_CH3/PTA2/UART0_TX/TPM2_CH1}
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
- */
-/* clang-format on */
-
-/* FUNCTION ************************************************************************************************************
- *
- * Function Name : BOARD_InitPins
- * Description   : Configures pin routing and optionally pin electrical features.
- *
- * END ****************************************************************************************************************/
 void BOARD_InitPins(void)
 {
-    /* Port A Clock Gate Control: Clock enabled */
-    CLOCK_EnableClock(kCLOCK_PortA);
+	CLOCK_EnableClock(kCLOCK_PortA);
+	CLOCK_EnableClock(kCLOCK_PortC);
+	CLOCK_EnableClock(kCLOCK_PortD);
+	CLOCK_EnableClock(kCLOCK_PortE);
 
-    /* PORTA1 (pin 35) is configured as UART0_RX */
-    PORT_SetPinMux(BOARD_DEBUG_UART_RX_PORT, BOARD_DEBUG_UART_RX_PIN, kPORT_MuxAlt2);
+	PORT_SetPinMux(BOARD_DEBUG_UART_RX_PORT, BOARD_DEBUG_UART_RX_PIN, kPORT_MuxAlt2);
+	PORT_SetPinMux(BOARD_DEBUG_UART_TX_PORT, BOARD_DEBUG_UART_TX_PIN, kPORT_MuxAlt2);
 
-    /* PORTA2 (pin 36) is configured as UART0_TX */
-    PORT_SetPinMux(BOARD_DEBUG_UART_TX_PORT, BOARD_DEBUG_UART_TX_PIN, kPORT_MuxAlt2);
+	/* LED Builtin */
+	PORT_SetPinMux(BUILTIN_LED_PORT, BUILTIN_LED_PIN, kPORT_MuxAsGpio);
 
-    SIM->SOPT5 = ((SIM->SOPT5 &
-                   /* Mask bits to zero which are setting */
-                   (~(SIM_SOPT5_UART0TXSRC_MASK | SIM_SOPT5_UART0RXSRC_MASK)))
+	/* Display */
+	PORT_SetPinMux(DISPLAY_SEGMENT_A_PORT, DISPLAY_SEGMENT_A_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SEGMENT_B_PORT, DISPLAY_SEGMENT_B_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SEGMENT_C_PORT, DISPLAY_SEGMENT_C_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SEGMENT_D_PORT, DISPLAY_SEGMENT_D_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SEGMENT_E_PORT, DISPLAY_SEGMENT_E_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SEGMENT_F_PORT, DISPLAY_SEGMENT_F_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SEGMENT_G_PORT, DISPLAY_SEGMENT_G_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SECTION_1_PORT, DISPLAY_SECTION_1_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SECTION_2_PORT, DISPLAY_SECTION_2_PIN, kPORT_MuxAsGpio);
+	PORT_SetPinMux(DISPLAY_SECTION_3_PORT, DISPLAY_SECTION_3_PIN, kPORT_MuxAsGpio);
 
-                  /* UART0 Transmit Data Source Select: UART0_TX pin. */
-                  | SIM_SOPT5_UART0TXSRC(SOPT5_UART0TXSRC_UART_TX)
-
-                  /* UART0 Receive Data Source Select: UART_RX pin. */
-                  | SIM_SOPT5_UART0RXSRC(SOPT5_UART0RXSRC_UART_RX));
+	SIM->SOPT5 = ((SIM->SOPT5 &
+				   (~(SIM_SOPT5_UART0TXSRC_MASK | SIM_SOPT5_UART0RXSRC_MASK))) |
+				  SIM_SOPT5_UART0TXSRC(SOPT5_UART0TXSRC_UART_TX) | SIM_SOPT5_UART0RXSRC(SOPT5_UART0RXSRC_UART_RX));
 }
-/***********************************************************************************************************************
- * EOF
- **********************************************************************************************************************/

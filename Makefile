@@ -18,8 +18,8 @@ build: setup
 	$(MESON) compile -C build
 
 # Build the .bin file
-.PHONY: build_binary
-build_binary:
+.PHONY: binary
+binary:
 	$(MESON) compile -C build binary
 
 # Change to DEBUG settings (Default)
