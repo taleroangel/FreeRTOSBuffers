@@ -4,7 +4,7 @@ project(
     version: '0.1',
     default_options: [
         'c_std=gnu18',
-        'cpp_std=c++17',
+        'cpp_std=gnu++20',
         'optimization=0',
         'warning_level=3',
         'debug=true',
@@ -118,7 +118,7 @@ freertos = static_library(
 elf = executable(
     'output',
     [project_src],
-    cpp_args: ['-Wno-register'],
+    cpp_args: ['-Wno-register', '-Wno-volatile'],
     name_suffix: 'elf',
     include_directories: [project_inc],
     dependencies: [frdmkl46z_startup],

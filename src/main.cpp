@@ -6,6 +6,7 @@
 #include <tasks/dequeuer.hxx>
 #include <tasks/display.hxx>
 #include <tasks/tasks.hxx>
+#include <tasks/uart.hxx>
 
 /* --------- Includes --------- */
 
@@ -17,11 +18,15 @@
 /* FreeRTOS include */
 #include <FreeRTOS.h>
 #include <FreeRTOSConfig.h>
+#include <queue.h>
+#include <semphr.h>
 #include <task.h>
 
 /* FreeScale SDK */
 #include <fsl_debug_console.h>
 #include <fsl_gpio.h>
+#include <fsl_uart.h>
+#include <fsl_uart_freertos.h>
 
 /* --------- Declaration --------- */
 
@@ -48,7 +53,7 @@ int main(void) {
 
     BaseType_t retval = init_tasks();
     if (retval != pdPASS) {
-      PRINTF("Error during task creation\r\n", retval);
+      PRINTF("Error during task creation (%d)\r\n", retval);
       return EXIT_FAILURE;
     }
   } // Memory cleanup after block
@@ -64,6 +69,7 @@ int main(void) {
 /* --------- Definition --------- */
 
 void init_board() {
+  /* Initialize Pins*/
   gpio_pin_config_t pin_config = {
       kGPIO_DigitalOutput,
       0,
@@ -81,6 +87,12 @@ void init_drivers() { display_driver.init(); }
 BaseType_t init_tasks() {
   // Store return types
   BaseType_t task_return_status = 0U;
+
+  // Initialize the queue
+  tasks::data_queue =
+      xQueueCreate(tasks::queue_size, sizeof(tasks::queue_item_t));
+  if (tasks::data_queue == nullptr)
+    return pdFAIL;
 
   // Initialize the mutex
   tasks::display::mux_data = xSemaphoreCreateMutex();
@@ -104,6 +116,15 @@ BaseType_t init_tasks() {
            (configMINIMAL_STACK_SIZE + tasks::dequeuer::k_stack), nullptr,
            tasks::HIGH_PRIORITY, &tasks::dequeuer::handler)) != pdPASS) {
     vTaskDelete(tasks::dequeuer::handler);
+    return task_return_status;
+  }
+
+  // Initialize the UART task
+  if ((task_return_status = xTaskCreate(
+           tasks::uart::uart_controller_task, tasks::uart::k_name,
+           (configMINIMAL_STACK_SIZE + tasks::uart::k_stack), nullptr,
+           tasks::CRITICAL_PRIORITY, &tasks::uart::handler)) != pdPASS) {
+    vTaskDelete(tasks::uart::handler);
     return task_return_status;
   }
 

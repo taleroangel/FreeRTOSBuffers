@@ -4,6 +4,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
+/// Sample at which the data will be pulled out of the queue
 #define DEQUEUER_TASK_SAMPLE_HZ (80U)
 #define DEQUEUER_TASK_TICKS                                                    \
   (unsigned int)(configTICK_RATE_HZ / DEQUEUER_TASK_SAMPLE_HZ)
@@ -14,7 +15,7 @@ namespace tasks::dequeuer {
 constexpr char k_name[] = "DataDequeuer";
 
 /// @brief Additional memory to add to stack
-constexpr unsigned int k_stack = 10U;
+constexpr unsigned int k_stack = 0U;
 
 /// @brief Task handler
 extern TaskHandle_t handler;

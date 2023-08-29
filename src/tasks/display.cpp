@@ -13,28 +13,28 @@ namespace tasks::display {
 
 /* --------- Variable initialization --------- */
 SemaphoreHandle_t mux_data = nullptr;
-uint8_t data = 0U;
+uint8_t display_data = 0U;
 TaskHandle_t handler = nullptr;
 
 /* --------- Function declaration --------- */
-void update_display_task(void *param) {
+void update_display_task(void *pv_display_driver) {
 
   // Parameter guard
-  if (param == nullptr)   // No parameter was sent
+  if (pv_display_driver == nullptr)   // No parameter was sent
     vTaskDelete(nullptr); // Destroy itself
 
   // Unwrap the display_driver from parameters
-  drivers::display *display_driver = (drivers::display *)param;
+  drivers::display *display_driver = (drivers::display *)pv_display_driver;
 
   // Take wake time
   TickType_t last_wake_time = xTaskGetTickCount();
 
   while (true) {
     // Take muxtex and grab the value
-    if (xSemaphoreTake(mux_data, portMAX_DELAY) == pdPASS) {
-
+    if (xSemaphoreTake(mux_data, DISPLAY_TASK_MAX_WAIT) == pdPASS) {
+      // Get the number and set the character
       char characters[DISPLAY_NUMBER_OF_SECTIONS + 1] = "\0";
-      std::sprintf(characters, "%d", data);
+      std::sprintf(characters, "%d", display_data);
 
       // Update display
       display_driver->set(characters, std::strlen(characters));

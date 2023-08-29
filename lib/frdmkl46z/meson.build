@@ -11,6 +11,7 @@ project_inc += [
     include_directories('CMSIS/Include'),
     include_directories('device/.'),
     include_directories('device/drivers'),
+    include_directories('device/drivers/freertos'),
     include_directories('device/utilities/io'),
     include_directories('device/utilities/str'),
     include_directories('device/utilities/log'),
@@ -30,6 +31,7 @@ frdmkl46z_startup_src = files('device/gcc/startup_MKL46Z4.S')
 # Project SDK files
 frdmkl46z_sdk_src = [
     files('device/system_MKL46Z4.c'),
+    files('device/drivers/freertos/fsl_uart_freertos.c'),
     files('device/drivers/fsl_clock.c'),
     files('device/drivers/fsl_ftfx_controller.c'),
     files('device/drivers/fsl_ftfx_flash.c'),

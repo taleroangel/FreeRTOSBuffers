@@ -5,15 +5,25 @@
 #include <semphr.h>
 #include <task.h>
 
+#include <drivers/display.hxx>
+
+/// How many ticks does the display have to wait for a refresh
 #define DISPLAY_TASK_TICKS                                                     \
   (unsigned int)(configTICK_RATE_HZ / DISPLAY_REFRESH_RATE)
 
+/// Maximum wait time for lock to avoid frame drop
+#define DISPLAY_TASK_MAX_WAIT (2 * DISPLAY_TASK_TICKS)
+
 namespace tasks::display {
 /* --------- Global Variables --------- */
-// ! Access to this variables must be done in the order they are declared here!
 
+/// @brief Mutex to access this variables
+/// @note Access to global data must be accessed in the same order they are
+/// declared
 extern SemaphoreHandle_t mux_data;
-extern uint8_t data;
+
+/// @brief Data to be put in the display
+extern uint8_t display_data;
 
 /* --------- Constants --------- */
 
@@ -21,7 +31,7 @@ extern uint8_t data;
 constexpr char k_name[] = "DisplayUpdate";
 
 /// @brief Additional memory to add to stack
-constexpr unsigned int k_stack = 10U;
+constexpr unsigned int k_stack = 60U;
 
 /* --------- Tasks --------- */
 
@@ -30,9 +40,9 @@ extern TaskHandle_t handler;
 
 /**
  * @brief Update the display every DISPLAY_TICKS
- * @param pvParams display_driver as parameter
+ * @param pv_display_driver display_driver as parameter
  */
-void update_display_task(void *param);
+void update_display_task(void *pv_display_driver);
 } // namespace tasks::display
 
 #endif

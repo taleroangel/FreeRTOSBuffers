@@ -1,6 +1,7 @@
 #include "dequeuer.hxx"
 
 #include "display.hxx"
+#include "tasks.hxx"
 
 #include <FreeRTOS.h>
 #include <semphr.h>
@@ -15,23 +16,25 @@ void data_dequeuer_task(void *) {
   // Take wake time
   TickType_t last_wake_up = xTaskGetTickCount();
 
-  while (true) {
-	// Grab the lock on display
-	if (xSemaphoreTake(tasks::display::mux_data, portMAX_DELAY) == pdPASS) {
-		
-		// TODO: Actually grab values from the queue
-		{
-			static uint8_t counter = 0U;
-			tasks::display::data = counter;
-			counter++;
-		}
-		
-		// Release the lock
-		xSemaphoreGive(tasks::display::mux_data);
-	}
+  // Value buffer
+  tasks::queue_item_t item_buff = 0U;
 
-	// Apply delay to task
-	vTaskDelayUntil(&last_wake_up, DEQUEUER_TASK_TICKS);
+  while (true) {
+    if ( // Grab value from Queue and store it in item_buff
+        (xQueueReceive(tasks::data_queue, (void *)&item_buff, portMAX_DELAY) ==
+         pdTRUE) &&
+        // Grab the lock on display
+        (xSemaphoreTake(tasks::display::mux_data, portMAX_DELAY) == pdPASS)) {
+
+      // Store the value in display data
+      tasks::display::display_data = item_buff;
+
+      // Release the lock
+      xSemaphoreGive(tasks::display::mux_data);
+    }
+
+    // Apply delay to task
+    vTaskDelayUntil(&last_wake_up, DEQUEUER_TASK_TICKS);
   }
 
   // Delete task if some break condition is set

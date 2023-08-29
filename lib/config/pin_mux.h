@@ -50,6 +50,9 @@ extern "C" {
 #define SOPT5_UART0RXSRC_UART_RX 0x00u /*!<@brief UART0 Receive Data Source Select: UART_RX pin */
 #define SOPT5_UART0TXSRC_UART_TX 0x00u /*!<@brief UART0 Transmit Data Source Select: UART0_TX pin */
 
+#define SOPT5_UART1RXSRC_UART_RX 0x00u /*!<@brief UART1 Receive Data Source Select: UART1_RX pin */
+#define SOPT5_UART1TXSRC_UART_TX 0x00u /*!<@brief UART1 Transmit Data Source Select: UART1_TX pin */
+
 #define BOARD_DEBUG_UART_RX_PERIPHERAL UART0                 /*!<@brief Device name: UART0 */
 #define BOARD_DEBUG_UART_RX_SIGNAL RX                        /*!<@brief UART0 signal: RX */
 #define BOARD_DEBUG_UART_RX_PORT PORTA                       /*!<@brief PORT device name: PORTA */

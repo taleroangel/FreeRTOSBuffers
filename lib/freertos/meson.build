@@ -29,6 +29,7 @@ freertos_src = [
     # ARM CM0 GCC
     files('portable/GCC/ARM_CM0/port.c'),
     files('portable/GCC/ARM_CM0/fsl_tickless_systick.c'),
+    files('portable/GCC/ARM_CM0/runtime_stats.c'),
 
     # low_power_tickless
     files('portable/low_power_tickless/fsl_tickless_lptmr.c'),

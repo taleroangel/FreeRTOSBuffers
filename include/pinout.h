@@ -10,6 +10,16 @@ extern "C"
 #include <fsl_port.h>
 #include <fsl_common.h>
 
+/* External UART */
+#define UART_BAUD_RATE 2400
+#define UART_BASE UART1
+
+#define UART_TX_PIN	0U
+#define UART_TX_PORT PORTE
+
+#define UART_RX_PIN	1U
+#define UART_RX_PORT PORTE
+
 /* Built-int LED */
 
 #define BUILTIN_LED_ON 0
