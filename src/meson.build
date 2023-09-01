@@ -1,6 +1,11 @@
 project_src += [
-    files('main.cpp'),
+    # C files
+    files('main.c'),
+    files('tasks/interrupt.c'),
+
+    # C++ Files
     files('drivers/display.cpp'),
+    files('tasks/init.cpp'),
     files('tasks/display.cpp'),
     files('tasks/dequeuer.cpp'),
     files('tasks/uart.cpp'),

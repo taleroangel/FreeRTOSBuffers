@@ -4,7 +4,7 @@ project(
     version: '0.1',
     default_options: [
         'c_std=gnu18',
-        'cpp_std=gnu++20',
+        'cpp_std=c++17',
         'optimization=0',
         'warning_level=3',
         'debug=true',
@@ -37,27 +37,9 @@ project_inc = [include_directories('include')]
 subdir('lib')
 subdir('src')
 
-# Build arguments
-add_project_arguments(
-    defines,
-    '-mcpu=cortex-m0plus',
-    '-fno-common',
-    '-ffunction-sections',
-    '-fdata-sections',
-    '-ffreestanding',
-    '-fno-builtin',
-    '-mthumb',
-    '-mapcs',
-    '-mfloat-abi=soft',
-    '-MMD',
-    '-MP',
-    language: ['c', 'cpp'],
-)
-
-# Linker arguments
+# -- Project Arguments -- #
 add_project_link_arguments(
     libraries,
-    '-mcpu=cortex-m0plus',
     '--specs=nano.specs',
     '--specs=nosys.specs',
     '-fno-common',
@@ -75,14 +57,40 @@ add_project_link_arguments(
     '-z',
     '-Xlinker',
     'muldefs',
+    '-mcpu=cortex-m0plus',
     '-mfloat-abi=soft',
     language: ['c', 'cpp'],
 )
+
+add_project_arguments(
+    defines,
+    '-fno-common',
+    '-ffunction-sections',
+    '-fdata-sections',
+    '-ffreestanding',
+    '-fno-builtin',
+    '-mthumb',
+    '-mapcs',
+    '-mcpu=cortex-m0plus',
+    '-mfloat-abi=soft',
+    '-MMD',
+    '-MP',
+    language: ['c', 'cpp'],
+)
+
+add_project_arguments(
+    '-fno-rtti',
+    '-fno-exceptions',
+    language: ['cpp'],
+)
+
+# -- Declare dependencies and libraries -- #
 
 # Declare startup file
 frdmkl46z_startup = declare_dependency(
     sources: frdmkl46z_startup_src,
     include_directories: project_inc,
+    compile_args: frdmkl46z_startup_defines,
 )
 
 # Declare SDK
@@ -117,7 +125,7 @@ freertos = static_library(
 # Create the .elf file
 elf = executable(
     'output',
-    [project_src],
+    project_src,
     cpp_args: ['-Wno-register', '-Wno-volatile'],
     name_suffix: 'elf',
     include_directories: [project_inc],

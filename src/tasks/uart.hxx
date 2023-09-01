@@ -4,9 +4,9 @@
 #include <FreeRTOS.h>
 #include <task.h>
 
-#include <cstdint>
+#include <fsl_uart.h>
 
-#define UART_BAUD_RATE 2400
+#include <cstdint>
 
 namespace tasks::uart {
 
@@ -15,9 +15,6 @@ constexpr char k_name[] = "UartControllerTask";
 
 /// @brief Additional memory to add to stack
 constexpr unsigned int k_stack = 100U;
-constexpr unsigned int k_baud_rate = UART_BAUD_RATE;
-
-extern uint8_t uart_data;
 
 /* --------- Tasks --------- */
 

@@ -4,32 +4,33 @@
  * Copyright 2016-2017 NXP
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided
- * that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted (subject to the limitations in the disclaimer
+ * below) provided that the following conditions are met:
  *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
+ * o Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
  *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
+ * o Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  *
  * o Neither the name of the copyright holder nor the names of its
  *   contributors may be used to endorse or promote products derived from this
  *   software without specific prior written permission.
  *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS LICENSE.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY
+ * THIS LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+ * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
+ * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+ * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+ * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+ * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+ * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 #ifndef _BOARD_H_
@@ -138,25 +139,37 @@
 #define BOARD_LED_GREEN_GPIO_PIN 5U
 #endif
 
-#define LED_RED_INIT(output)                                                 \
-    GPIO_PinWrite(BOARD_LED_RED_GPIO, BOARD_LED_RED_GPIO_PIN, output); \
-    BOARD_LED_RED_GPIO->PDDR |= (1U << BOARD_LED_RED_GPIO_PIN) /*!< Enable target LED_RED */
-#define LED_RED_ON() \
-    GPIO_PortClear(BOARD_LED_RED_GPIO, 1U << BOARD_LED_RED_GPIO_PIN) /*!< Turn on target LED_RED */
-#define LED_RED_OFF() \
-    GPIO_PortSet(BOARD_LED_RED_GPIO, 1U << BOARD_LED_RED_GPIO_PIN) /*!< Turn off target LED_RED */
-#define LED_RED_TOGGLE() \
-    GPIO_PortToggle(BOARD_LED_RED_GPIO, 1U << BOARD_LED_RED_GPIO_PIN) /*!< Toggle on target LED_RED */
+#define LED_RED_INIT(output)                                                   \
+  GPIO_PinWrite(BOARD_LED_RED_GPIO, BOARD_LED_RED_GPIO_PIN, output);           \
+  BOARD_LED_RED_GPIO->PDDR |=                                                  \
+      (1U << BOARD_LED_RED_GPIO_PIN) /*!< Enable target LED_RED */
+#define LED_RED_ON()                                                           \
+  GPIO_PortClear(BOARD_LED_RED_GPIO,                                           \
+                 1U << BOARD_LED_RED_GPIO_PIN) /*!< Turn on target LED_RED */
+#define LED_RED_OFF()                                                          \
+  GPIO_PortSet(BOARD_LED_RED_GPIO,                                             \
+               1U << BOARD_LED_RED_GPIO_PIN) /*!< Turn off target LED_RED */
+#define LED_RED_TOGGLE()                                                       \
+  GPIO_PortToggle(                                                             \
+      BOARD_LED_RED_GPIO,                                                      \
+      1U << BOARD_LED_RED_GPIO_PIN) /*!< Toggle on target LED_RED */
 
-#define LED_GREEN_INIT(output)                                                   \
-    GPIO_PinWrite(BOARD_LED_GREEN_GPIO, BOARD_LED_GREEN_GPIO_PIN, output); \
-    BOARD_LED_GREEN_GPIO->PDDR |= (1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Enable target LED_GREEN */
-#define LED_GREEN_ON() \
-    GPIO_PortClear(BOARD_LED_GREEN_GPIO, 1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Turn on target LED_GREEN */
-#define LED_GREEN_OFF() \
-    GPIO_PortSet(BOARD_LED_GREEN_GPIO, 1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Turn off target LED_GREEN */
-#define LED_GREEN_TOGGLE() \
-    GPIO_PortToggle(BOARD_LED_GREEN_GPIO, 1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Toggle on target LED_GREEN */
+#define LED_GREEN_INIT(output)                                                 \
+  GPIO_PinWrite(BOARD_LED_GREEN_GPIO, BOARD_LED_GREEN_GPIO_PIN, output);       \
+  BOARD_LED_GREEN_GPIO->PDDR |=                                                \
+      (1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Enable target LED_GREEN */
+#define LED_GREEN_ON()                                                         \
+  GPIO_PortClear(                                                              \
+      BOARD_LED_GREEN_GPIO,                                                    \
+      1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Turn on target LED_GREEN */
+#define LED_GREEN_OFF()                                                        \
+  GPIO_PortSet(                                                                \
+      BOARD_LED_GREEN_GPIO,                                                    \
+      1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Turn off target LED_GREEN */
+#define LED_GREEN_TOGGLE()                                                     \
+  GPIO_PortToggle(                                                             \
+      BOARD_LED_GREEN_GPIO,                                                    \
+      1U << BOARD_LED_GREEN_GPIO_PIN) /*!< Toggle on target LED_GREEN */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -169,21 +182,18 @@ extern "C" {
 void BOARD_InitDebugConsole(void);
 #if defined(SDK_I2C_BASED_COMPONENT_USED) && SDK_I2C_BASED_COMPONENT_USED
 void BOARD_I2C_Init(I2C_Type *base, uint32_t clkSrc_Hz);
-status_t BOARD_I2C_Send(I2C_Type *base,
-                        uint8_t deviceAddress,
-                        uint32_t subAddress,
-                        uint8_t subaddressSize,
-                        uint8_t *txBuff,
-                        uint8_t txBuffSize);
-status_t BOARD_I2C_Receive(I2C_Type *base,
-                           uint8_t deviceAddress,
-                           uint32_t subAddress,
-                           uint8_t subaddressSize,
-                           uint8_t *rxBuff,
-                           uint8_t rxBuffSize);
+status_t BOARD_I2C_Send(I2C_Type *base, uint8_t deviceAddress,
+                        uint32_t subAddress, uint8_t subaddressSize,
+                        uint8_t *txBuff, uint8_t txBuffSize);
+status_t BOARD_I2C_Receive(I2C_Type *base, uint8_t deviceAddress,
+                           uint32_t subAddress, uint8_t subaddressSize,
+                           uint8_t *rxBuff, uint8_t rxBuffSize);
 void BOARD_Accel_I2C_Init(void);
-status_t BOARD_Accel_I2C_Send(uint8_t deviceAddress, uint32_t subAddress, uint8_t subaddressSize, uint32_t txBuff);
-status_t BOARD_Accel_I2C_Receive(uint8_t deviceAddress, uint32_t subAddress, uint8_t subaddressSize, uint8_t *rxBuff, uint8_t rxBuffSize);
+status_t BOARD_Accel_I2C_Send(uint8_t deviceAddress, uint32_t subAddress,
+                              uint8_t subaddressSize, uint32_t txBuff);
+status_t BOARD_Accel_I2C_Receive(uint8_t deviceAddress, uint32_t subAddress,
+                                 uint8_t subaddressSize, uint8_t *rxBuff,
+                                 uint8_t rxBuffSize);
 #endif /* SDK_I2C_BASED_COMPONENT_USED */
 
 #if defined(__cplusplus)

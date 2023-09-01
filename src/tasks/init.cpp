@@ -1,7 +1,10 @@
-/* --------- Private includes --------- */
-#include <pinout.h>
+extern "C" {
+#include "init.h"
+}
 
+/* --------- Private includes --------- */
 #include <drivers/display.hxx>
+#include <pinout.h>
 
 #include <tasks/dequeuer.hxx>
 #include <tasks/display.hxx>
@@ -10,11 +13,6 @@
 
 /* --------- Includes --------- */
 
-/* Board Configuration */
-#include <board.h>
-#include <clock_config.h>
-#include <pin_mux.h>
-
 /* FreeRTOS include */
 #include <FreeRTOS.h>
 #include <FreeRTOSConfig.h>
@@ -22,69 +20,13 @@
 #include <semphr.h>
 #include <task.h>
 
-/* FreeScale SDK */
-#include <fsl_debug_console.h>
-#include <fsl_gpio.h>
-#include <fsl_uart.h>
-#include <fsl_uart_freertos.h>
-
-/* --------- Declaration --------- */
-
-/// @brief Initialize the board pinout and electrical features
-void init_board();
-
-/// @brief Initialize the custom drivers
-void init_drivers();
-
-/// @brief Create FreeRTOS defined tasks
-/// @return FreeRTOS error or pdPASS
-BaseType_t init_tasks();
-
-/* --------- Main variables --------- */
+/* --------- Global Variables --------- */
 drivers::display display_driver = {};
 
-/* --------- Entrypoint --------- */
-int main(void) {
-
-  {
-    // Initialization routines
-    init_board();
-    init_drivers();
-
-    BaseType_t retval = init_tasks();
-    if (retval != pdPASS) {
-      PRINTF("Error during task creation (%d)\r\n", retval);
-      return EXIT_FAILURE;
-    }
-  } // Memory cleanup after block
-
-  // Start the scheduler
-  vTaskStartScheduler();
-
-  // Execution Loop
-  while (true)
-    ;
-}
-
 /* --------- Definition --------- */
+void initialize_display() { display_driver.init(); }
 
-void init_board() {
-  /* Initialize Pins*/
-  gpio_pin_config_t pin_config = {
-      kGPIO_DigitalOutput,
-      0,
-  };
-
-  BOARD_InitPins();
-  BOARD_BootClockRUN();
-  BOARD_InitDebugConsole();
-
-  GPIO_PinInit(BUILTIN_LED_GPIO, BUILTIN_LED_PIN, &pin_config);
-}
-
-void init_drivers() { display_driver.init(); }
-
-BaseType_t init_tasks() {
+int initialize_freertos() {
   // Store return types
   BaseType_t task_return_status = 0U;
 

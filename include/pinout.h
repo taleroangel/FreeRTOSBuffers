@@ -12,7 +12,6 @@ extern "C"
 
 /* External UART */
 #define UART_BAUD_RATE 2400
-#define UART_BASE UART1
 
 #define UART_TX_PIN	0U
 #define UART_TX_PORT PORTE
