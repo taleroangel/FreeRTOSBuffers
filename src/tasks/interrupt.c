@@ -1,5 +1,11 @@
 #include "interrupt.h"
+
+#include <data/data.h>
 #include <pinout.h>
+
+#include <FreeRTOS.h>
+#include <queue.h>
+#include <semphr.h>
 
 #include <board.h>
 #include <clock_config.h>
@@ -7,7 +13,7 @@
 
 #include <fsl_uart.h>
 
-#define CONFIG_UART UART1
+#define CONFIG_UART UART_BASE
 #define CONFIG_UART_CLKSRC BUS_CLK
 #define CONFIG_UART_CLK_FREQ CLOCK_GetFreq(BUS_CLK)
 #define CONFIG_UART_IRQn UART1_IRQn
@@ -18,18 +24,22 @@
  *
  */
 void CONFIG_UART_IRQHandler(void) {
-  uint8_t data;
+  BaseType_t _ = pdFALSE;
+  queue_item_t data;
 
-  /* Cuando llega un nuevo dato */
+  // Grab the data
   if ((kUART_RxDataRegFullFlag | kUART_RxOverrunFlag) &
       UART_GetStatusFlags(CONFIG_UART)) {
     data = UART_ReadByte(CONFIG_UART);
-    UART_WriteByte(CONFIG_UART, data);
   }
-  
-  /* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F Store immediate
-    overlapping exception return operation might vector to incorrect interrupt
-  */
+
+  // Send data to QUEUE
+  xQueueSendFromISR(intermediate_queue, (void *)&data, &_);
+  xSemaphoreGiveFromISR(uart_semaphore, &_);
+
+  // YIELD
+  portYIELD_FROM_ISR(_);
+
 #if defined __CORTEX_M && (__CORTEX_M == 4U)
   __DSB();
 #endif

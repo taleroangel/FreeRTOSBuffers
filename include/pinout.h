@@ -2,21 +2,23 @@
 #define __PINOUT_H__
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
+#include <fsl_common.h>
 #include <fsl_gpio.h>
 #include <fsl_port.h>
-#include <fsl_common.h>
 
 /* External UART */
+#define UART_BASE UART1
 #define UART_BAUD_RATE 2400
+#define UART_XON 0x11U
+#define UART_XOFF 0x13U
 
-#define UART_TX_PIN	0U
+#define UART_TX_PIN 0U
 #define UART_TX_PORT PORTE
 
-#define UART_RX_PIN	1U
+#define UART_RX_PIN 1U
 #define UART_RX_PORT PORTE
 
 /* Built-int LED */

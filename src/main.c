@@ -1,7 +1,12 @@
 /* --------- Project configuration --------- */
+#include <data/data.h>
 #include <pinout.h>
 #include <tasks/init.h>
 #include <tasks/interrupt.h>
+
+/* --------- FreeRTOS --------- */
+#include <FreeRTOS.h>
+#include <task.h>
 
 /* Board Configuration */
 #include <MKL46Z4.h>
@@ -22,10 +27,17 @@ void init_board(void);
 int main(void) {
   // 1. Initialize the board
   init_board();
-  // 2. Initialize the UART
+  // 2. Initialize queues
+  init_data();
+  // 3. Initialize the UART
   init_uart();
-  // 3. 
+  // 4. Initialize the Display
   initialize_display();
+  // 5. Initialize the tasks
+  initialize_freertos();
+
+  // Init scheduler
+  vTaskStartScheduler();
 
   // Infinite Loop
   for (;;)
