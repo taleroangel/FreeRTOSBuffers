@@ -7,7 +7,8 @@
 
 #include <stdint.h>
 
-#define QUEUE_SIZE 30
+#define SEMAPHORE_COUNT 35
+#define QUEUE_SIZE 35
 
 /// @brief Item to be put in the queue
 typedef uint8_t queue_item_t;

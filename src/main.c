@@ -34,8 +34,9 @@ int main(void) {
   // 4. Initialize the Display
   initialize_display();
   // 5. Initialize the tasks
-  initialize_freertos();
-
+  if (initialize_freertos() != pdTRUE) {
+    return EXIT_FAILURE;
+  }
   // Init scheduler
   vTaskStartScheduler();
 
@@ -49,7 +50,7 @@ void init_board(void) {
   // Create GPIO configuration
   gpio_pin_config_t pin_config = {
       kGPIO_DigitalOutput,
-      0,
+      BUILTIN_LED_ON,
   };
 
   // Initialize board properties

@@ -15,7 +15,7 @@ namespace tasks::dequeuer {
 constexpr char k_name[] = "DataDequeuer";
 
 /// @brief Additional memory to add to stack
-constexpr unsigned int k_stack = 0U;
+constexpr unsigned int k_stack = 10U;
 
 /// @brief Task handler
 extern TaskHandle_t handler;

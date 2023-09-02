@@ -30,19 +30,15 @@ void CONFIG_UART_IRQHandler(void) {
   // Grab the data
   if ((kUART_RxDataRegFullFlag | kUART_RxOverrunFlag) &
       UART_GetStatusFlags(CONFIG_UART)) {
+    // Grab value from ISR
     data = UART_ReadByte(CONFIG_UART);
+    // Send data to QUEUE
+    xQueueSendFromISR(intermediate_queue, (void *)&data, &_);
+    xSemaphoreGiveFromISR(uart_semaphore, &_);
   }
-
-  // Send data to QUEUE
-  xQueueSendFromISR(intermediate_queue, (void *)&data, &_);
-  xSemaphoreGiveFromISR(uart_semaphore, &_);
 
   // YIELD
   portYIELD_FROM_ISR(_);
-
-#if defined __CORTEX_M && (__CORTEX_M == 4U)
-  __DSB();
-#endif
 }
 
 /**

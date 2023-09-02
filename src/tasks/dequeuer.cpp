@@ -10,6 +10,7 @@ extern "C" {
 #include <FreeRTOS.h>
 #include <semphr.h>
 
+#include <fsl_gpio.h>
 #include <fsl_uart.h>
 
 namespace tasks::dequeuer {
@@ -24,32 +25,36 @@ void data_dequeuer_task(void *) {
 
   // Value buffer
   tasks::queue_item_t item_buff = 0U;
+
+  // Queue size buffer
   float queue_size;
   UBaseType_t queue_items_size;
 
   while (true) {
-    if ( // Grab value from Queue and store it in item_buff
-        (xQueueReceive(tasks::data_queue, (void *)&item_buff, portMAX_DELAY) ==
-         pdTRUE) &&
-        // Grab the lock on display
-        (xSemaphoreTake(tasks::display::mux_data, portMAX_DELAY) == pdPASS)) {
 
-      // Store the value in display data
-      tasks::display::display_data = item_buff;
+    // Calculate queue size
+    queue_items_size = uxQueueMessagesWaiting(tasks::data_queue);
+    queue_size = ((float)queue_items_size / (float)tasks::queue_size);
 
-      // Release the lock
-      xSemaphoreGive(tasks::display::mux_data);
+    if ((queue_size < (1.0F - tasks::queue_max)) && (uart_is_activated == 0)) {
+      xSemaphoreTake(uart_is_activated_mutex, portMAX_DELAY);
+      // Activate uART
+      uint8_t uart_status = UART_XON;
+      UART_WriteBlocking(UART_BASE, &uart_status, sizeof(uart_status));
+      GPIO_PinWrite(BUILTIN_LED_GPIO, BUILTIN_LED_PIN, BUILTIN_LED_ON);
+	  uart_is_activated = 1;
+      xSemaphoreGive(uart_is_activated_mutex);
+    }
 
-      // Calculate queue size
-      queue_items_size = uxQueueMessagesWaiting(tasks::data_queue);
-      queue_size = ((float)queue_items_size / (float)tasks::queue_size);
-
-      if ((queue_size < (1.0F - tasks::queue_max)) &&
-          (uart_is_activated == 0)) {
-        xSemaphoreTake(uart_is_activated_mutex, portMAX_DELAY);
-        UART_WriteByte(UART_BASE, UART_XON);
-        uart_is_activated = 1;
-        xSemaphoreGive(uart_is_activated_mutex);
+    // Grab value from Queue and store it in item_buff
+    if (xQueueReceive(tasks::data_queue, (void *)&item_buff, portMAX_DELAY) ==
+        pdTRUE) {
+      // Grab the lock on display
+      if (xSemaphoreTake(tasks::display::mux_data, portMAX_DELAY) == pdPASS) {
+        // Store the value in display data
+        tasks::display::display_data = item_buff;
+        // Release the lock
+        xSemaphoreGive(tasks::display::mux_data);
       }
     }
 

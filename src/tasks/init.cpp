@@ -56,7 +56,7 @@ int initialize_freertos() {
   if ((task_return_status = xTaskCreate(
            tasks::dequeuer::data_dequeuer_task, tasks::dequeuer::k_name,
            (configMINIMAL_STACK_SIZE + tasks::dequeuer::k_stack), nullptr,
-           tasks::HIGH_PRIORITY, &tasks::dequeuer::handler)) != pdPASS) {
+           tasks::CRITICAL_PRIORITY, &tasks::dequeuer::handler)) != pdPASS) {
     vTaskDelete(tasks::dequeuer::handler);
     return task_return_status;
   }
