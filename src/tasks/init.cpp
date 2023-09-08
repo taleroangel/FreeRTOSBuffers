@@ -24,22 +24,11 @@ extern "C" {
 drivers::display display_driver = {};
 
 /* --------- Definition --------- */
-void initialize_display() { display_driver.init(); }
+void init_display() { display_driver.init(); }
 
-int initialize_freertos() {
+int init_freertos() {
   // Store return types
   BaseType_t task_return_status = 0U;
-
-  // Initialize the queue
-  tasks::data_queue =
-      xQueueCreate(tasks::queue_size, sizeof(tasks::queue_item_t));
-  if (tasks::data_queue == nullptr)
-    return pdFAIL;
-
-  // Initialize the mutex
-  tasks::display::mux_data = xSemaphoreCreateMutex();
-  if (tasks::display::mux_data == nullptr)
-    return pdFAIL;
 
   // Create display update task
   if ((task_return_status = xTaskCreate(
@@ -72,4 +61,43 @@ int initialize_freertos() {
 
   // Return with no errors
   return task_return_status;
+}
+
+void init_uart() {
+
+  /* Setup UART configuration */
+  uart_config_t config;
+  UART_GetDefaultConfig(&config);
+
+  config.baudRate_Bps = UART_BAUD_RATE;
+  config.parityMode = kUART_ParityDisabled;
+  config.stopBitCount = kUART_OneStopBit;
+  config.enableTx = true;
+  config.enableRx = true;
+
+  /* Initialize the UART */
+  UART_Init(CONFIG_UART, &config, CONFIG_UART_CLK_FREQ);
+
+  /* Enable RX interrupt. */
+  UART_EnableInterrupts(CONFIG_UART, kUART_RxDataRegFullInterruptEnable |
+                                         kUART_RxOverrunInterruptEnable);
+  EnableIRQ(CONFIG_UART_IRQn);
+}
+
+int init_variables() {
+  int retval = 0;
+
+  // Initialize generic tasks
+  if ((retval = tasks::init_variables()) != pdPASS)
+    return pdFAIL;
+
+  // Initialize display tasks
+  if ((retval = tasks::display::init_variables()) != pdPASS)
+    return pdFAIL;
+
+  // Initialize uart tasks
+  if ((retval = tasks::uart::init_variables()) != pdPASS)
+    return pdFAIL;
+
+  return pdPASS;
 }

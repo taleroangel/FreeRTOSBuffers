@@ -39,6 +39,11 @@ constexpr unsigned int k_stack = 60U;
 extern TaskHandle_t handler;
 
 /**
+ * @brief Initialize Semaphores and variables
+ */
+int init_variables();
+
+/**
  * @brief Update the display every DISPLAY_TICKS
  * @param pv_display_driver display_driver as parameter
  */

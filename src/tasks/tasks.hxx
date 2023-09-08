@@ -20,6 +20,8 @@ constexpr float queue_max = TASKS_QUEUE_MAX;
 /// @brief Queue in which to put the incoming Serial data
 extern QueueHandle_t data_queue;
 
+int init_variables();
+
 /// @brief Tasks standarized priorities
 enum : UBaseType_t {
   LOWEST_PRIORITY = 0UL,

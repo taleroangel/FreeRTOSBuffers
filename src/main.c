@@ -1,8 +1,6 @@
 /* --------- Project configuration --------- */
-#include <data/data.h>
 #include <pinout.h>
 #include <tasks/init.h>
-#include <tasks/interrupt.h>
 
 /* --------- FreeRTOS --------- */
 #include <FreeRTOS.h>
@@ -25,18 +23,25 @@ void init_board(void);
 
 /* --------- Application entry point --------- */
 int main(void) {
-  // 1. Initialize the board
+
+  // 1. Initialize board pins
   init_board();
-  // 2. Initialize queues
-  init_data();
-  // 3. Initialize the UART
+
+  // 2. Initialize the display driver
+  init_display();
+
+  // 3. Initialize semaphores and mutex
+  if (init_variables() != pdPASS)
+    return EXIT_FAILURE;
+
+  // 4. Initialize UART
   init_uart();
-  // 4. Initialize the Display
-  initialize_display();
-  // 5. Initialize the tasks
-  if (initialize_freertos() != pdTRUE) {
+
+  // 5. Initialize tasks
+  if (init_freertos() != pdPASS) {
     return EXIT_FAILURE;
   }
+
   // Init scheduler
   vTaskStartScheduler();
 
@@ -59,5 +64,9 @@ void init_board(void) {
   BOARD_InitDebugConsole();
 
   // Initialize the LED
-  GPIO_PinInit(BUILTIN_LED_GPIO, BUILTIN_LED_PIN, &pin_config);
+  pin_config.outputLogic = BUILTIN_LED_OFF;
+  GPIO_PinInit(BUILTIN_LED_R_GPIO, BUILTIN_LED_R_PIN, &pin_config);
+
+  pin_config.outputLogic = BUILTIN_LED_ON;
+  GPIO_PinInit(BUILTIN_LED_G_GPIO, BUILTIN_LED_G_PIN, &pin_config);
 }

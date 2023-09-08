@@ -6,15 +6,28 @@
 extern "C" {
 #endif
 
+//! Must follow initialization order
+
 /**
  * @brief Initialization routines for the Display
  */
-void initialize_display(void);
+void init_display(void);
+
+/**
+ * @brief Initialize semaphores and mutex
+ *
+ */
+int init_variables(void);
+
+/**
+ * @brief Initialize the UART
+ */
+void init_uart(void);
 
 /**
  * @brief Initialization routines for FreeRTOS tasks
  */
-int initialize_freertos(void);
+int init_freertos(void);
 
 #ifdef __cplusplus
 }

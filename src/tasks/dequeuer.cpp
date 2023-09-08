@@ -2,10 +2,9 @@
 
 #include "display.hxx"
 #include "tasks.hxx"
+
 #include <pinout.h>
-extern "C" {
-#include <data/data.h>
-}
+#include <tasks/uart.hxx>
 
 #include <FreeRTOS.h>
 #include <semphr.h>
@@ -32,20 +31,6 @@ void data_dequeuer_task(void *) {
 
   while (true) {
 
-    // Calculate queue size
-    queue_items_size = uxQueueMessagesWaiting(tasks::data_queue);
-    queue_size = ((float)queue_items_size / (float)tasks::queue_size);
-
-    if ((queue_size < (1.0F - tasks::queue_max)) && (uart_is_activated == 0)) {
-      xSemaphoreTake(uart_is_activated_mutex, portMAX_DELAY);
-      // Activate uART
-      uint8_t uart_status = UART_XON;
-      UART_WriteBlocking(UART_BASE, &uart_status, sizeof(uart_status));
-      GPIO_PinWrite(BUILTIN_LED_GPIO, BUILTIN_LED_PIN, BUILTIN_LED_ON);
-	  uart_is_activated = 1;
-      xSemaphoreGive(uart_is_activated_mutex);
-    }
-
     // Grab value from Queue and store it in item_buff
     if (xQueueReceive(tasks::data_queue, (void *)&item_buff, portMAX_DELAY) ==
         pdTRUE) {
@@ -60,9 +45,24 @@ void data_dequeuer_task(void *) {
 
     // Apply delay to task
     vTaskDelayUntil(&last_wake_up, DEQUEUER_TASK_TICKS);
-  }
 
-  // Delete task if some break condition is set
-  vTaskDelete(nullptr);
+    // Calculate queue size
+    queue_items_size = uxQueueMessagesWaiting(tasks::data_queue);
+    queue_size = ((float)queue_items_size / (float)tasks::queue_size);
+
+    // Enable the UART
+    if ((queue_size < (1.0F - tasks::queue_max)) &&
+        (tasks::uart::uart_is_activated == false)) {
+      xSemaphoreTake(tasks::uart::uart_semaphore, portMAX_DELAY);
+
+      // Activate UART
+      UART_WriteByte(UART_BASE, UART_XON);
+      GPIO_PinWrite(BUILTIN_LED_G_GPIO, BUILTIN_LED_G_PIN, BUILTIN_LED_ON);
+
+      // Set activation variable
+      tasks::uart::uart_is_activated = true;
+      xSemaphoreGive(tasks::uart::uart_semaphore);
+    }
+  }
 }
 } // namespace tasks::dequeuer

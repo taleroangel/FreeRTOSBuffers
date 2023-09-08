@@ -17,11 +17,21 @@ uint8_t display_data = 0U;
 TaskHandle_t handler = nullptr;
 
 /* --------- Function declaration --------- */
+int init_variables() {
+  // Initialize the mutex
+  mux_data = xSemaphoreCreateMutex();
+  if (mux_data == nullptr)
+    return pdFAIL;
+
+  // Return success
+  return pdPASS;
+}
+
 void update_display_task(void *pv_display_driver) {
 
   // Parameter guard
-  if (pv_display_driver == nullptr)   // No parameter was sent
-    vTaskDelete(nullptr); // Destroy itself
+  if (pv_display_driver == nullptr) // No parameter was sent
+    vTaskDelete(nullptr);           // Destroy itself
 
   // Unwrap the display_driver from parameters
   drivers::display *display_driver = (drivers::display *)pv_display_driver;

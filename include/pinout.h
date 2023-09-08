@@ -11,7 +11,7 @@ extern "C" {
 
 /* External UART */
 #define UART_BASE UART1
-#define UART_BAUD_RATE 2400
+#define UART_BAUD_RATE 2400U
 #define UART_XON 0x11U
 #define UART_XOFF 0x13U
 
@@ -21,14 +21,20 @@ extern "C" {
 #define UART_RX_PIN 1U
 #define UART_RX_PORT PORTE
 
-/* Built-int LED */
+/* Built-int LED*/
 
 #define BUILTIN_LED_ON 0
 #define BUILTIN_LED_OFF 1
 
-#define BUILTIN_LED_PIN 29U
-#define BUILTIN_LED_GPIO GPIOE
-#define BUILTIN_LED_PORT PORTE
+// RED
+#define BUILTIN_LED_R_PIN 29U
+#define BUILTIN_LED_R_GPIO GPIOE
+#define BUILTIN_LED_R_PORT PORTE
+
+// GREEN
+#define BUILTIN_LED_G_PIN 5U
+#define BUILTIN_LED_G_GPIO GPIOD
+#define BUILTIN_LED_G_PORT PORTD
 
 /* Seven segments display */
 
