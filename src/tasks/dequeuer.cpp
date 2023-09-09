@@ -54,11 +54,11 @@ void data_dequeuer_task(void *) {
     if ((queue_size < (1.0F - tasks::queue_max)) &&
         (tasks::uart::uart_is_activated == false)) {
       xSemaphoreTake(tasks::uart::uart_semaphore, portMAX_DELAY);
-
       // Activate UART
-      UART_WriteByte(UART_BASE, UART_XON);
+      if ((kUART_TxDataRegEmptyFlag)&UART_GetStatusFlags(CONFIG_UART)) {
+        UART_WriteByte(CONFIG_UART, UART_XON);
+      }
       GPIO_PinWrite(BUILTIN_LED_G_GPIO, BUILTIN_LED_G_PIN, BUILTIN_LED_ON);
-
       // Set activation variable
       tasks::uart::uart_is_activated = true;
       xSemaphoreGive(tasks::uart::uart_semaphore);

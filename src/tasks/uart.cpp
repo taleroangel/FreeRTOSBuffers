@@ -49,13 +49,14 @@ void uart_controller_task(void *) {
         // Check if queue is filled
         if ((queue_size > tasks::queue_max) &&
             (tasks::uart::uart_is_activated == true)) {
+          xSemaphoreTake(tasks::uart::uart_activation_mutex, portMAX_DELAY);
           // Write XOFF
-          UART_WriteByte(UART_BASE, UART_XOFF);
+          if ((kUART_TxDataRegEmptyFlag)&UART_GetStatusFlags(CONFIG_UART)) {
+            UART_WriteByte(CONFIG_UART, UART_XOFF);
+          }
           // LED OFF for visual reference
           GPIO_PinWrite(BUILTIN_LED_G_GPIO, BUILTIN_LED_G_PIN, BUILTIN_LED_OFF);
-
           // Set UART activation variable
-          xSemaphoreTake(tasks::uart::uart_activation_mutex, portMAX_DELAY);
           tasks::uart::uart_is_activated = false;
           xSemaphoreGive(tasks::uart::uart_activation_mutex);
         }
@@ -72,26 +73,17 @@ extern "C" void CONFIG_UART_IRQHandler(void) {
   BaseType_t hptw = pdFALSE;
   tasks::uart::queue_item_t data;
 
-  static tasks::uart::queue_item_t previous_data = 0;
-  static uint8_t consecutive_count = 0;
-
   if ((kUART_RxDataRegFullFlag | kUART_RxOverrunFlag) &
       UART_GetStatusFlags(CONFIG_UART)) {
     // Grab value from ISR
     data = UART_ReadByte(CONFIG_UART);
+  }
 
-    if (data == previous_data) {
-      consecutive_count++;
-    } else {
-      if (consecutive_count == (DEQUEUER_TASK_SAMPLE_HZ - 1)) {
-        GPIO_PinWrite(BUILTIN_LED_R_GPIO, BUILTIN_LED_R_PIN, BUILTIN_LED_OFF);
-      } else if (consecutive_count < DEQUEUER_TASK_SAMPLE_HZ) {
-        GPIO_PinWrite(BUILTIN_LED_R_GPIO, BUILTIN_LED_R_PIN, BUILTIN_LED_ON);
-      }
-      consecutive_count = 0;
+  // Check if UART signal was not catched
+  if (!tasks::uart::uart_is_activated) {
+    if ((kUART_TxDataRegEmptyFlag)&UART_GetStatusFlags(CONFIG_UART)) {
+      UART_WriteByte(CONFIG_UART, UART_XOFF);
     }
-
-    previous_data = data;
   }
 
   // Send data to QUEUE
